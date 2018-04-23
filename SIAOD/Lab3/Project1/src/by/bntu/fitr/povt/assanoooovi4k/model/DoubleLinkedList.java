@@ -7,20 +7,37 @@ import java.util.NoSuchElementException;
 public class DoubleLinkedList<Item> implements Iterable<Item> {
     private Node<Item> first;
     private Node<Item> last;
-    private int size;
+    private int size = 0;
 
+
+    Node<Item> node(int index) {
+        if (index < (size >> 1)) {
+            Node<Item> x = first;
+            for (int i = 0; i < index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node<Item> x = last;
+            for (int i = size - 1; i > index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
 
     private static class Node<Item> {
-        private Item item;
-        private Node<Item> next;
-        private Node<Item> prev;
+        Item item;
+        Node<Item> next;
+        Node<Item> prev;
+
+        Node(Node<Item> prev, Item element, Node<Item> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
     }
 
 
     public DoubleLinkedList() {
-        first = null;
-        last  = null;
-        size = 0;
     }
 
 
@@ -28,117 +45,131 @@ public class DoubleLinkedList<Item> implements Iterable<Item> {
         return first == null;
     }
 
-
     public int size() {
         return size;
     }
 
-
-    public void addFront(Item item) {
-        Node<Item> newNode = new Node<Item>();
-        newNode.item = item;
-
-        if(first == null) {
-            first = last = newNode;
-        }
-        else {
-            newNode.next = first;
-            first = newNode;
-            newNode.next.prev = first;
-        }
-
-        size++;
+    private boolean isElementIndex(int index) {
+        return index >= 0 && index < size;
     }
 
-    public Item deleteFront() {
-        if (first == null) {
-            throw new NoSuchElementException("List is empty!");
-        }
-        else {
-            Node<Item> temp = first;
-
-            if(first.next != null) {
-                first.next.prev = null;
-            }
-
-            first = first.next;
-            size--;
-            return temp.item;
-        }
+    private void checkElementIndex(int index) {
+        if (!isElementIndex(index))
+            throw new IndexOutOfBoundsException("Index: " + index + ". Size " + size);
     }
 
-    public void addBack(Item item) {
-        Node<Item> newNode = new Node<Item>();
-        newNode.item = item;
-
-        if(first == null) {
-            first = last = newNode;
-        }
-        else {
-            last.next = newNode;
-            newNode.prev = last;
+    private void linkFirst(Item item) {
+        Node<Item> f = first;
+        Node<Item> newNode = new Node<>(null, item, f);
+        first = newNode;
+        if (f == null)
             last = newNode;
-        }
-
+        else
+            f.prev = newNode;
         size++;
     }
 
-    public Item deleteBack() {
-        if (last == null) {
-            throw new NoSuchElementException("List is empty!");
-        }
-        else {
-            Node<Item> temp = last;
-
-            if(last.prev != null) {
-                last.prev.next = null;
-            }
-
-            last = last.prev;
-            size--;
-            return temp.item;
-        }
+    private void linkLast(Item item) {
+        final Node<Item> l = last;
+        final Node<Item> newNode = new Node<>(l, item, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            l.next = newNode;
+        size++;
     }
 
-    public Item deleteElement(int index) {
-        if (index<1 || index > size) {
-            throw new ArrayIndexOutOfBoundsException("Error!");
-        }
-        else if (index == 1){
-            return deleteFront();
-        }
-        else if (index == size) {
-            return deleteBack();
-        }
-        else {
-            int count = 1;
-            Node<Item> current;
-            current = first;
+    Item unlink(Node<Item> x) {
+        // assert x != null;
+        Item element = x.item;
+        Node<Item> next = x.next;
+        Node<Item> prev = x.prev;
 
-            while (current != null && count != index) {
-                current = current.next;
-                count++;
-            }
-
-            Node<Item> deleted = current;
-
-            current.prev.next = current.next;
-            current.next.prev = current.prev;
-
-            return deleted.item;
+        if (prev == null) {
+            first = next;
+        } else {
+            prev.next = next;
+            x.prev = null;
         }
+
+        if (next == null) {
+            last = prev;
+        } else {
+            next.prev = prev;
+            x.next = null;
+        }
+
+        x.item = null;
+        size--;
+        return element;
+    }
+
+    private Item unlinkFirst(Node<Item> f) {
+        Item element = f.item;
+        Node<Item> next = f.next;
+        f.item = null;
+        f.next = null;
+        first = next;
+        if (next == null)
+            last = null;
+        else
+            next.prev = null;
+        size--;
+        return element;
+    }
+
+    private Item unlinkLast(Node<Item> l) {
+        Item element = l.item;
+        Node<Item> prev = l.prev;
+        l.item = null;
+        l.prev = null; // help GC
+        last = prev;
+        if (prev == null)
+            first = null;
+        else
+            prev.next = null;
+        size--;
+        return element;
+    }
+
+    public void addFirst(Item item) {
+        linkFirst(item);
+    }
+
+    public void addLast(Item item) {
+        linkLast(item);
+    }
+
+    public Item removeFirst() {
+        final Node<Item> f = first;
+        if (f == null)
+            throw new NoSuchElementException();
+        return unlinkFirst(f);
+    }
+
+    public Item removeLast() {
+        final Node<Item> l = last;
+        if (l == null)
+            throw new NoSuchElementException();
+        return unlinkLast(l);
+    }
+
+    public Item remove(int index) {
+        checkElementIndex(index);
+        return unlink(node(index));
     }
 
 
     public void clearList() {
         while (!isEmpty()) {
-                deleteFront();
+                removeFirst();
         }
     }
 
 
-    public Item[] toArray() {
-        Object[] objects = new Object[size()];
+    public <Item> Item[] toArray(Item[] items) {
+        Object[] objects = items;
         Iterator iterator = iterator();
         int i = 0;
         while (iterator.hasNext()) {
@@ -161,7 +192,6 @@ public class DoubleLinkedList<Item> implements Iterable<Item> {
         return new ListIterator<Item>(first);
     }
 
-    // an iterator, doesn't implement remove() since it's optional
     private class ListIterator<Item> implements Iterator<Item> {
         private Node<Item> current;
 
