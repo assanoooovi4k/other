@@ -1,4 +1,4 @@
-package by.bntu.fitr.povt.assanoooovi4k.module;
+package by.bntu.fitr.povt.assanoooovi4k.model;
 
 import java.util.Comparator;
 

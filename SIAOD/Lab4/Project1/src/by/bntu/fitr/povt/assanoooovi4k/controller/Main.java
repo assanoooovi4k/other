@@ -1,6 +1,6 @@
 package by.bntu.fitr.povt.assanoooovi4k.controller;
 
-import by.bntu.fitr.povt.assanoooovi4k.module.BinaryTree;
+import by.bntu.fitr.povt.assanoooovi4k.model.BinaryTree;
 import by.bntu.fitr.povt.assanoooovi4k.view.Printer;
 
 public class Main {
