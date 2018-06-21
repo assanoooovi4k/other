@@ -4,15 +4,16 @@ import by.bntu.fitr.povt.assanoooovi4k.model.Array;
 import by.bntu.fitr.povt.assanoooovi4k.model.concurrent.ConcurrentArray;
 import by.bntu.fitr.povt.assanoooovi4k.view.Output;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.*;
-
+import org.apache.log4j.*;
 
 public class Main {
+	private static final Logger LOGGER =  Logger.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException {
+    public static void main(String[] args) throws InterruptedException{
+//    	Logger LOGGER = Logger.getLogger(Main.class);
 //        System.out.println(Locale.getDefault());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("data");
         Output.printer(resourceBundle.getString("greetings") + "\n");
@@ -38,10 +39,11 @@ public class Main {
 		try {
 			Integer[] integerss = future.get();
 			for (Integer integer:
-				 integerss) {
+				 integers) {
 				Output.printer(integer + " ");
 			}
 		} catch (ExecutionException e) {
+			LOGGER.warn(e.toString());
 			e.printStackTrace();
 		}
 
