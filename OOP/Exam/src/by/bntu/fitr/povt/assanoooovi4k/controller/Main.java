@@ -12,7 +12,7 @@ import org.apache.log4j.*;
 public class Main {
 	private static final Logger LOGGER =  Logger.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args){
 //    	Logger LOGGER = Logger.getLogger(Main.class);
 //        System.out.println(Locale.getDefault());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("data");
@@ -38,11 +38,10 @@ public class Main {
 
 		try {
 			Integer[] integerss = future.get();
-			for (Integer integer:
-				 integers) {
+			for (Integer integer: integerss) {
 				Output.printer(integer + " ");
 			}
-		} catch (ExecutionException e) {
+		} catch (ExecutionException | InterruptedException e) {
 			LOGGER.warn(e.toString());
 			e.printStackTrace();
 		}
