@@ -4,12 +4,20 @@ import by.bntu.fitr.povt.assanoooovi4k.model.Array;
 import by.bntu.fitr.povt.assanoooovi4k.model.concurrent.ConcurrentArray;
 import by.bntu.fitr.povt.assanoooovi4k.view.Output;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException {
+//        System.out.println(Locale.getDefault());
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("data");
+        Output.printer(resourceBundle.getString("greetings") + "\n");
+
+
 //	    int[] massif = {-1, 232, 324, 0, 24, -34, 23, 8, 313, -32};
 //	    Array array = new Array(massif);
 //
@@ -17,6 +25,7 @@ public class Main {
 //	    thread.start();
 //	    Thread.sleep(10000);
 //        Output.printer(array.toString());
+
 
 		ExecutorService executorService = Executors.newFixedThreadPool(1);
 
