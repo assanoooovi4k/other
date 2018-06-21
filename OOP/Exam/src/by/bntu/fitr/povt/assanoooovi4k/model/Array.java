@@ -5,6 +5,10 @@ import java.util.Arrays;
 public class Array implements Runnable{
     private int[] array;
 
+
+    public Array() {
+    }
+
     public Array(int... array) {
         this.array = array;
     }
@@ -17,13 +21,14 @@ public class Array implements Runnable{
         this.array = array;
     }
 
+
     @Override
     public void run() {
         sort();
         System.out.println(Arrays.toString(array));
     }
 
-    public void sort() {
+    private void sort() {
         Arrays.sort(array);
     }
 
